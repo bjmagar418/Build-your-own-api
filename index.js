@@ -51,7 +51,7 @@ const replacementJoke = {
   jokeText:req.body.text,
   jokeType:req.body.type,
 };
-const searchIndex = jokes.findIndex((index)=> index.id ===id);
+const searchIndex = jokes.findIndex((joke)=> joke.id === id);
 jokes[searchIndex]= replacementJoke;
 res.json(replacementJoke);
 })
@@ -72,8 +72,30 @@ res.json(replacementJoke);
 })
 
 //7. DELETE Specific joke
+app.delete("/jokes/:id"),(req,res)=>{
+const id = parseInt(req.params.id);
+const searchIndex = jokes.findIndex((joke)=> joke.id === id);
+// const deletedJoke = jokes.splice(searchIndex,1);
+// res.json(deletedJoke);
+
+if(searchIndex > -1){
+  jokes.splice(searchIndex,1);
+  res.json(200);
+}else{
+  res.status(404).json({message:"Joke not found"});
+}
+}
 
 //8. DELETE All jokes
+app.delete("/all",(req,res)=> {
+  const userKey = req.query.key;
+  if(userKey === masterKey){
+    jokes = [];
+    res.json({message:"All jokes deleted successfully"});
+  }else{
+    res.status(403).json({message:"Invalid key. Access denied."});
+  }
+})
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
